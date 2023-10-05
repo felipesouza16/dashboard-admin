@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./CellAction";
+import { Check, X } from "lucide-react";
 
 export type ProductColumn = {
   id: string;
@@ -22,11 +23,31 @@ export const columns: ColumnDef<ProductColumn>[] = [
   },
   {
     accessorKey: "isFeatured",
-    header: "Destaque",
+    header: () => <div className="text-center">Destaque</div>,
+    cell: ({ row }) =>
+      row.original.isFeatured ? (
+        <div className="flex justify-center">
+          <Check className="h-4 w-4" />
+        </div>
+      ) : (
+        <div className="flex justify-center">
+          <X className="h-4 w-4" />
+        </div>
+      ),
   },
   {
     accessorKey: "isArchived",
-    header: "Arquivado",
+    header: () => <div className="text-center">Arquivado</div>,
+    cell: ({ row }) =>
+      row.original.isArchived ? (
+        <div className="flex justify-center">
+          <Check className="h-4 w-4" />
+        </div>
+      ) : (
+        <div className="flex justify-center">
+          <X className="h-4 w-4" />
+        </div>
+      ),
   },
   {
     accessorKey: "price",
