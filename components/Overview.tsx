@@ -1,6 +1,14 @@
 "use client";
 
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { formatter } from "@/lib/utils";
+import {
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 type OverviewProps = {
   data: any[];
@@ -10,6 +18,10 @@ export const Overview = ({ data }: OverviewProps) => {
   return (
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={data}>
+        <Tooltip
+          formatter={(value) => formatter.format(Number(value))}
+          labelStyle={{ color: "#000" }}
+        />
         <XAxis
           dataKey="name"
           stroke="#888888"
