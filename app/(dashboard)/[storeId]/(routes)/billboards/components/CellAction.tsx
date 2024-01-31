@@ -30,7 +30,7 @@ export const CellAction = ({ data }: CellActionsProps) => {
 
   const onCopy = () => {
     navigator.clipboard.writeText(data.id);
-    toast.success("Id do painél copiado.");
+    toast.success("Id do painel copiado.");
   };
 
   const onDelete = async () => {
@@ -46,6 +46,9 @@ export const CellAction = ({ data }: CellActionsProps) => {
     } finally {
       setLoading(false);
       setOpen(false);
+      setTimeout(() => {
+        document.body.style.pointerEvents = "";
+      }, 500);
     }
   };
 
@@ -53,7 +56,12 @@ export const CellAction = ({ data }: CellActionsProps) => {
     <>
       <AlertModal
         isOpen={open}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          setOpen(false);
+          setTimeout(() => {
+            document.body.style.pointerEvents = "";
+          }, 500);
+        }}
         loading={loading}
         onConfirm={onDelete}
       />

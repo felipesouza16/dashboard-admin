@@ -4,6 +4,12 @@ import { NextResponse } from "next/server";
 
 import { stripe } from "@/lib/stripe";
 import prismadb from "@/lib/prismadb";
+import { Prisma } from "@prisma/client";
+
+type ProductObjectProps = {
+  id: string;
+  quantity: number;
+};
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -33,12 +39,41 @@ export async function POST(req: Request) {
     address?.country,
   ];
 
+  const productsObjects: ProductObjectProps[] = JSON.parse(
+    String(session?.metadata?.productsObjects)
+  );
   const addressString = addressComponents.filter((c) => c !== null).join(", ");
-
+  try {
+    productsObjects.forEach(async ({ id, quantity }) => {
+      const prod = await prismadb.product.findFirst({
+        where: {
+          id: id,
+        },
+      });
+      const decrementResult = Number(prod?.quantity) - quantity;
+      if (decrementResult < 0) {
+        return new NextResponse(
+          "Webhook error: Quantidade solicitada maior do que estoque."
+        );
+      }
+      await prismadb.product.updateMany({
+        where: {
+          id: id,
+        },
+        data: {
+          quantity: {
+            decrement: quantity,
+          },
+        },
+      });
+    });
+  } catch (error: any) {
+    return new NextResponse(`Webhook error: ${error.message}`, { status: 400 });
+  }
   if (event.type === "checkout.session.completed") {
-    const order = await prismadb.order.update({
+    await prismadb.order.update({
       where: {
-        id: session?.metadata?.order,
+        id: session?.metadata?.orderId,
       },
       data: {
         isPaid: true,
@@ -47,18 +82,6 @@ export async function POST(req: Request) {
       },
       include: {
         orderItens: true,
-      },
-    });
-
-    const productIds = order.orderItens.map((orderItem) => orderItem.productId);
-    await prismadb.product.updateMany({
-      where: {
-        id: {
-          in: [...productIds],
-        },
-      },
-      data: {
-        isArchived: true,
       },
     });
   }

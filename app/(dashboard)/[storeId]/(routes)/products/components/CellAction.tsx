@@ -44,6 +44,9 @@ export const CellAction = ({ data }: CellActionsProps) => {
     } finally {
       setLoading(false);
       setOpen(false);
+      setTimeout(() => {
+        document.body.style.pointerEvents = "";
+      }, 500);
     }
   };
 
@@ -51,7 +54,12 @@ export const CellAction = ({ data }: CellActionsProps) => {
     <>
       <AlertModal
         isOpen={open}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          setOpen(false);
+          setTimeout(() => {
+            document.body.style.pointerEvents = "";
+          }, 500);
+        }}
         loading={loading}
         onConfirm={onDelete}
       />

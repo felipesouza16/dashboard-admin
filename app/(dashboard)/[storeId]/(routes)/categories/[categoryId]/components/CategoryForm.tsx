@@ -160,7 +160,7 @@ export const CategoryForm = ({
               name="billboardId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Painél</FormLabel>
+                  <FormLabel>Painel</FormLabel>
                   <Select
                     disabled={loading}
                     onValueChange={field.onChange}

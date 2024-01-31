@@ -49,6 +49,7 @@ const formSchema = z.object({
   name: z.string().min(1),
   images: z.object({ url: z.string() }).array(),
   price: z.coerce.number().min(1),
+  quantity: z.coerce.number().min(1),
   categoryId: z.string().min(1),
   colorId: z.string().min(1),
   sizeId: z.string().min(1),
@@ -83,6 +84,7 @@ export const ProductForm = ({
       name: "",
       images: [],
       price: 0,
+      quantity: 0,
       categoryId: "",
       colorId: "",
       sizeId: "",
@@ -207,6 +209,24 @@ export const ProductForm = ({
                       type="number"
                       disabled={loading}
                       placeholder="9,99"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantidade</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      disabled={loading}
+                      placeholder="Quantidade do produto em estoque"
                       {...field}
                     />
                   </FormControl>

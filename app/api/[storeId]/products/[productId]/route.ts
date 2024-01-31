@@ -133,7 +133,7 @@ export async function PATCH(
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: { storeId: string; productId: string } }
+  { params }: { params: { productId: string; storeId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -157,7 +157,7 @@ export async function DELETE(
       return new NextResponse("Não autorizado.", { status: 403 });
     }
 
-    const product = await prismadb.product.deleteMany({
+    const product = await prismadb.product.delete({
       where: {
         id: params.productId,
       },

@@ -22,7 +22,7 @@ export async function POST(
     }
 
     if (!billboardId) {
-      return new NextResponse("O painél é obrigatório.", { status: 400 });
+      return new NextResponse("O painel é obrigatório.", { status: 400 });
     }
 
     if (!params.storeId) {

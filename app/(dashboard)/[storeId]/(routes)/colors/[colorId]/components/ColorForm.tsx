@@ -59,7 +59,6 @@ export const ColorForm = ({ initialData }: ColorFormProps) => {
   });
 
   const onSubmit = async (data: ColorFormValues) => {
-    console.log("teste");
     try {
       setLoading(true);
       if (initialData) {

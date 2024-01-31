@@ -17,6 +17,7 @@ export async function POST(
       categoryId,
       colorId,
       sizeId,
+      quantity,
       images,
       isFeatured,
       isArchived,
@@ -36,6 +37,10 @@ export async function POST(
 
     if (!price) {
       return new NextResponse("O preço é obrigatório.", { status: 400 });
+    }
+
+    if (!quantity) {
+      return new NextResponse("A quantidade é obrigatória.", { status: 400 });
     }
 
     if (!categoryId) {
@@ -69,6 +74,7 @@ export async function POST(
       data: {
         name,
         price,
+        quantity,
         isFeatured,
         isArchived,
         categoryId,

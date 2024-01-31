@@ -10,6 +10,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
+type ProductObjectProps = {
+  id: string;
+  quantity: number;
+};
+
 export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });
 }
@@ -18,10 +23,10 @@ export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
-  const { productIds, successUrl, cancelUrl } = await req.json();
+  const { productsObjects, successUrl, cancelUrl } = await req.json();
 
-  if (!productIds || productIds.length === 0) {
-    return new NextResponse("Os id's dos produtos são obrigatórios.");
+  if (!productsObjects || productsObjects.length === 0) {
+    return new NextResponse("Os produtos são obrigatórios.");
   }
 
   if (!successUrl) {
@@ -37,7 +42,7 @@ export async function POST(
   const products = await prismadb.product.findMany({
     where: {
       id: {
-        in: productIds,
+        in: productsObjects.map((prod: ProductObjectProps) => prod.id),
       },
     },
   });
@@ -46,9 +51,11 @@ export async function POST(
 
   products.forEach((product) => {
     line_items.push({
-      quantity: 1,
+      quantity: productsObjects.find(
+        (prod: ProductObjectProps) => prod.id === product.id
+      ).quantity,
       price_data: {
-        currency: "USD",
+        currency: "BRL",
         product_data: {
           name: product.name,
         },
@@ -62,14 +69,20 @@ export async function POST(
       storeId: params.storeId,
       isPaid: false,
       orderItens: {
-        create: productIds.map((productId: string) => ({
+        create: productsObjects.map((prod: ProductObjectProps) => ({
           product: {
             connect: {
-              id: productId,
+              id: prod.id,
             },
           },
         })),
       },
+    },
+  });
+
+  const orderItem = await prismadb.orderItem.findFirst({
+    where: {
+      orderId: order.id,
     },
   });
 
@@ -83,7 +96,8 @@ export async function POST(
     success_url: successUrl,
     cancel_url: cancelUrl,
     metadata: {
-      order: order.id,
+      orderId: order.id,
+      productsObjects: JSON.stringify(productsObjects),
     },
   });
 
